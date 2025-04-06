@@ -1,94 +1,85 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <title>ÅÏÇÑÉ ÇáÕáÇÍíÇÊ</title>
-  <style>
-    body { font-family: Arial; direction: rtl; padding: 20px; background: #f9f9f9; }
-    h2, h3 { color: #333; }
-    label, input, select { margin: 10px 0; display: block; }
-    button { padding: 10px 15px; background: #333; color: #fff; border: none; border-radius: 5px; cursor: pointer; }
-    .result { margin-top: 15px; color: green; }
-    table { width: 100%; border-collapse: collapse; margin-top: 20px; background: #fff; }
-    th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
-    th { background-color: #eee; }
-    .info-box { margin-top: 30px; padding: 15px; background: #fff; border: 1px solid #ccc; border-radius: 5px; }
-  </style>
+    <meta charset="UTF-8">
+    <title>لوحة تحكم المشرف</title>
+    <style>
+        body {
+            font-family: Arial;
+            direction: rtl;
+            padding: 20px;
+            background: #f9f9f9;
+        }
+        h2, h3 {
+            color: #333;
+        }
+        label, input, select {
+            margin: 10px 0;
+            display: block;
+        }
+        button {
+            padding: 10px 15px;
+            background: #333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .result {
+            margin-top: 15px;
+            color: green;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: #fff;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #eee;
+        }
+        .info-box {
+            margin-top: 30px;
+            padding: 15px;
+            background: #fff;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+    </style>
 </head>
 <body>
-  <h2>?? ÅÏÇÑÉ ÕáÇÍíÇÊ ÇáãÔÑÝíä</h2>
-  <label for="username">ÇÓã ÇáãÓÊÎÏã:</label>
-  <input type="text" id="username" placeholder="ãËÇá: mod1" />
+    <h2>هل تريد طرد المستخدم؟</h2>
 
-  <label>ÇÎÊÑ ÇáÕáÇÍíÇÊ:</label>
-  <label><input type="checkbox" value="ban" /> ãäÚ</label>
-  <label><input type="checkbox" value="kick" /> ØÑÏ</label>
-  <label><input type="checkbox" value="panel" /> ÇáÏÎæá ááæÍÉ</label>
+    <label for="username">اسم المستخدم:</label>
+    <input type="text" id="username" placeholder="مثال: mod1">
 
-  <button onclick="updatePermissions()">ÊÍÏíË ÇáÕáÇÍíÇÊ</button>
-  <p class="result" id="result"></p>
+    <label>سبب الطرد:</label>
+    <label><input type="checkbox" value="ban"> كلام غير لائق</label>
+    <label><input type="checkbox" value="ban"> سب</label>
+    <label><input type="checkbox" value="ban"> سبام</label>
+    <label><input type="checkbox" value="ban"> مخالفة القوانين</label>
 
-  <h3>?? ÇáãÔÑÝíä ÇáÍÇáííä:</h3>
-  <table id="adminsTable">
-    <thead>
-      <tr>
-        <th>ÇÓã ÇáãÓÊÎÏã</th>
-        <th>ÇáÕáÇÍíÇÊ</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+    <button onclick="alert('تم تنفيذ الطرد')">تنفيذ الطرد</button>
 
-  <div class="info-box">
-    <h3>?? ãÚáæãÇÊ ÌåÇÒß</h3>
-    <p><strong>IP:</strong> <span id="ip">ÌÇÑ ÇáÊÍãíá...</span></p>
-    <p><strong>ÇáÌåÇÒ / ÇáãÊÕÝÍ:</strong> <span id="agent">ÌÇÑ ÇáÊÍãíá...</span></p>
-  </div>
-
-  <script>
-    function updatePermissions() {
-      const username = document.getElementById("username").value;
-      const checkboxes = document.querySelectorAll("input[type=checkbox]:checked");
-      const permissions = Array.from(checkboxes).map(cb => cb.value);
-
-      fetch("/update-permissions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ targetUsername: username, permissions })
-      })
-      .then(res => res.json())
-      .then(data => {
-        const result = document.getElementById("result");
-        result.style.color = data.success ? 'green' : 'red';
-        result.innerText = data.success ? "? Êã ÊÍÏíË ÇáÕáÇÍíÇÊ ÈäÌÇÍ" : "? ÇáãÓÊÎÏã ÛíÑ ãæÌæÏ";
-        if (data.success) loadAdmins();
-      });
-    }
-
-    function loadAdmins() {
-      fetch("/admins")
-        .then(res => res.json())
-        .then(data => {
-          const tbody = document.querySelector("#adminsTable tbody");
-          tbody.innerHTML = "";
-          data.forEach(admin => {
-            const row = `<tr><td>${admin.username}</td><td>${admin.permissions.join(", ")}</td></tr>`;
-            tbody.innerHTML += row;
-          });
-        });
-    }
-
-    function loadUserInfo() {
-      fetch("/user-info")
-        .then(res => res.json())
-        .then(data => {
-          document.getElementById("ip").innerText = data.ip;
-          document.getElementById("agent").innerText = data.userAgent;
-        });
-    }
-
-    loadAdmins();
-    loadUserInfo();
-  </script>
+    <h3>المستخدمين الحاليين:</h3>
+    <table>
+        <tr>
+            <th>اسم المستخدم</th>
+            <th>الدور</th>
+        </tr>
+        <tr>
+            <td>ahmed</td>
+            <td>مشرف</td>
+        </tr>
+        <tr>
+            <td>user123</td>
+            <td>مستخدم</td>
+        </tr>
+    </table>
 </body>
 </html>
